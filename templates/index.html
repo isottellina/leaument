@@ -16,7 +16,15 @@
   <body>
       <main>
 	  <h1>Léaument</h1>
-	  Ce site est encore sous construction. Revenez plus tard ! 
+	  <form action="/day" method="POST">
+	      <input type="date" name="date" />
+	      <button
+		  type="submit"
+		  hx-post="/day"
+		  hx-target="#result"
+	      >Valider</button>
+	  </form>
+	  <div id="result"></div>
       </main>
   </body>
 </html>
