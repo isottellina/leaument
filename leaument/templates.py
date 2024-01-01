@@ -4,12 +4,14 @@ from leaument.constants import DAY_VALUES
 from leaument.converter import RepublicanDate
 
 def format_day_value(name, href, gender) -> str:
+    link = f'<a href="https://fr.wikipedia.org{href}"/>{name}</a>'
+    
     if name[0].lower() in ["a", "e", "é", "è", "i", "o", "u", "y"]:
-        return f"de l'{name}"
+        return f"de l'{link}"
     elif gender == "M":
-        return f"du {name}"
+        return f"du {link}"
     elif gender == "F":
-        return f"de la {name}"
+        return f"de la {link}"
 
 def day_value(date: RepublicanDate) -> str:
     value = DAY_VALUES[date.month - 1][date.day - 1]

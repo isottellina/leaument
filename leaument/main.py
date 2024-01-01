@@ -6,7 +6,7 @@ from datetime import date
 from leaument.converter import RepublicanDate
 
 from leaument.templates import TEMPLATES
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from leaument.constants import CALENDER_BEGINNING
 
 
@@ -20,10 +20,13 @@ class RepublicanDayRequest(BaseModel):
 
 async def republican_day(request: Request):
     form_data = await request.form()
-    parsed_data = RepublicanDayRequest.model_validate(form_data)
+    try:
+        parsed_data = RepublicanDayRequest.model_validate(form_data)
+    except ValidationError:
+        return Response("Bad date", status_code=422)
 
     if parsed_data.date < CALENDER_BEGINNING:
-        return Response(status_code=400)
+        return Response("Dates before September 22nd, 1792 are not valid", status_code=422)
 
     republican_date = RepublicanDate.from_gregorian(parsed_data.date)
 
