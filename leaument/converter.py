@@ -58,6 +58,52 @@ def get_republican_year(gregorian_date: date) -> tuple[int, int]:
     )
     return republican_year_started - 1, (gregorian_date - start_of_previous_year).days
 
+def int_to_roman(a: int) -> str:
+    """
+    This is horrible. Rome must burn.
+
+    Largely inspired by Donald Knuth's TeX implementation.
+    """
+    if a > 3999:
+        return f"why must you hurt me this way ({a})"
+    
+    values = "MDCLXVI"
+    current_value = 1000
+    pointer = 0
+    result = ""
+    
+    while True:
+        while a >= current_value:
+            result += values[pointer]
+            a -= current_value
+
+        if a <= 0:
+            return result
+
+        next_pointer = pointer + 1
+        divide_by = 5 if pointer % 2 else 2
+        next_value = current_value // divide_by
+
+        if divide_by == 2:
+            # if dividing by 2 (1000 -> 500, 100 -> 50), we have
+            # to take into account the substractive nature of
+            # roman numerals, so we look even further to add the substraction.
+            #
+            # therefore, next_pointer always refers to a power of 10.
+            next_pointer += 1
+            next_value //= 5
+
+        # For example, if 900 + 100 >= 1000, we have to substract 100
+        # and go back to the start of the loop with the same values.
+        # we add next_value to a, since we have substracted it here.
+        if (a + next_value) >= current_value:
+            result += values[next_pointer]
+            a += next_value
+        else:
+            # if we're completely done with this substraction shit,
+            # we can safely go to the next value. spare me please.
+            current_value //= divide_by
+            pointer += 1
 
 @dataclass
 class RepublicanDate:
@@ -71,17 +117,17 @@ class RepublicanDate:
 
         return cls(
             year,
-            days_into_year // 30,
+            (days_into_year // 30) + 1,
             (days_into_year % 30) + 1,
         )
 
     def is_extra_day(self) -> bool:
-        return self.month == 12
+        return self.month == 13
 
     def format_day(self) -> str:
-        return f"{self.day} {MONTHS[self.month]}"
+        return f"{self.day} {MONTHS[self.month - 1]}"
     
     def __str__(self) -> str:
         day = EXTRA_DAYS[self.day - 1] if self.is_extra_day() else self.format_day()
 
-        return f"{day}, an {self.year}"
+        return f"{day}, an {int_to_roman(self.year)}"
