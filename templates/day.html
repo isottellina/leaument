@@ -1,3 +1,13 @@
 <!-- -*- engine:jinja -*- -->
 
-Cette date correspond au <b>{{ republican_date }}</b>
+<p>
+Cette date correspond au <b>{{ republican_date }}</b> !
+</p>
+
+<p>
+{% if republican_date.is_extra_day() %}
+    Ce jour fait partie des <em>sans-culottides</em>, les jours ajoutés en fin d'année pour que l'année fasse 365 jours (ou 366 pour les années sextiles). 
+{% else %}
+    Ce jour est le jour {{ republican_date|day_value }}.
+{% endif %}
+</p>
